@@ -1,0 +1,60 @@
+---
+title: "FINAL PROJECT"
+author: "JIRRAINE OCTAVIA,NO BARBIE JOY OBAS, MEIGELYN JOY MATIAS, ANDREA PATRICE PINEDA"
+date: "2023-12-22"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+JIRRAINE OCTAVIANO
+BARBIE JOY OBAS
+MEIGELYN JOY MATIAS
+ANDREA PATRICE PINEDA 
+
+```{r}
+install.packages("rvest")
+library(rvest)
+url <- "https://www.imdb.com/title/tt12747748/reviews/?ref_=tt_ql_2"
+
+
+scrape_reviews <- function(url) {
+  webpage <- read_html(url)
+  reviews <- webpage %>% html_nodes(".text.show-more__control") %>% html_text()
+  reviews <- gsub("[\r\n]", "", reviews)
+  reviews <- gsub("\\s+", " ", reviews)
+  return(reviews)
+}
+
+
+next_page <- function(url) {
+  webpage <- read_html(url)
+  next_page_url <- webpage %>% html_node(".lister-page-next.next-page") %>% html_attr("href")
+  return(next_page_url)
+}
+
+
+reviews_list <- c()
+reviews_count <- 0
+
+while (reviews_count <- 275 ) {
+  reviews <- scrape_reviews(url)
+  reviews_list <- c(reviews_list, reviews)
+  reviews_count <- reviews_count + length(reviews)
+  
+  
+  next_url <- next_page(url)
+  if (is.na(next_url)) {
+    break  # No more pages
+  } else {
+    url <- paste0("https://www.imdb.com", next_url)
+  }
+}
+
+reviews_list <- head(reviews_list, 300)
+
+# Display the reviews
+cat(reviews_list, sep = "\n\n")
+```
